@@ -451,6 +451,8 @@ export function DriverPanelClient() {
                   VALID_STATUS_TRANSITIONS[shipment.status] || [];
                 const isTerminal = validNext.length === 0;
                 const isUpdating = statusUpdating === shipment.id;
+                const isAssigned = shipment.status === "ASSIGNED";
+                const isPickedUp = shipment.status === "PICKED_UP";
                 const isInTransit = shipment.status === "IN_TRANSIT";
                 const isDelivered = shipment.status === "DELIVERED";
                 const isCancelled = shipment.status === "CANCELLED";
@@ -519,6 +521,28 @@ export function DriverPanelClient() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {isAssigned && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => handleStatusChange(shipment, "PICKED_UP")}
+                            disabled={isUpdating}
+                          >
+                            <Package className="mr-1.5 h-3.5 w-3.5" />
+                            Mark Picked Up
+                          </Button>
+                        )}
+                        {isPickedUp && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => handleStatusChange(shipment, "IN_TRANSIT")}
+                            disabled={isUpdating}
+                          >
+                            <Truck className="mr-1.5 h-3.5 w-3.5" />
+                            Start Transit
+                          </Button>
+                        )}
                         {canAddTracking && (
                           <Button
                             variant="outline"
