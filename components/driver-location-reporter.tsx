@@ -43,6 +43,21 @@ async function postTrackingUpdate(
   return response.ok;
 }
 
+async function reverseGeocode(latitude: number, longitude: number) {
+  const params = new URLSearchParams({
+    lat: String(latitude),
+    lng: String(longitude),
+  });
+  const response = await fetch(`/api/geocode/reverse?${params.toString()}`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) return null;
+
+  const payload = (await response.json()) as { location?: string };
+  return payload.location ?? null;
+}
+
 export function DriverLocationReporter({
   shipments,
 }: DriverLocationReporterProps) {
@@ -71,9 +86,16 @@ export function DriverLocationReporter({
         async (position) => {
           if (cancelled) return;
 
+          const location = await reverseGeocode(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          if (cancelled) return;
+
           const payload = buildAutoTrackingPayload({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
+            location,
           });
 
           await Promise.allSettled(

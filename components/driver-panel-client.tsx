@@ -92,6 +92,21 @@ const initialLocationForm: LocationFormState = {
   longitude: "",
 };
 
+async function reverseGeocode(latitude: number, longitude: number) {
+  const params = new URLSearchParams({
+    lat: String(latitude),
+    lng: String(longitude),
+  });
+  const response = await fetch(`/api/geocode/reverse?${params.toString()}`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) return `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
+  const payload = (await response.json()) as { location?: string };
+  return payload.location ?? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+}
+
 export function DriverPanelClient() {
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [search, setSearch] = useState("");
@@ -340,11 +355,15 @@ export function DriverPanelClient() {
 
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        const location = await reverseGeocode(latitude, longitude);
+
         setLocationForm((prev) => ({
-          location: prev.location.trim() || "Current GPS location",
-          latitude: position.coords.latitude.toFixed(6),
-          longitude: position.coords.longitude.toFixed(6),
+          location: prev.location.trim() || location,
+          latitude: latitude.toFixed(6),
+          longitude: longitude.toFixed(6),
         }));
         setLocationErrors((prev) => ({
           ...prev,
@@ -352,7 +371,7 @@ export function DriverPanelClient() {
           longitude: undefined,
         }));
         setLocating(false);
-        toast.success("Current GPS coordinates added.");
+        toast.success("Current location added.");
       },
       (geoError) => {
         setLocating(false);

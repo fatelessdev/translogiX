@@ -24,7 +24,20 @@ assert.deepEqual(
     longitude: 77.5945627,
   }),
   {
-    location: "Auto GPS location",
+    location: "12.971599, 77.594563",
+    latitude: 12.971599,
+    longitude: 77.594563,
+  }
+);
+
+assert.deepEqual(
+  buildAutoTrackingPayload({
+    latitude: 12.9715987,
+    longitude: 77.5945627,
+    location: "Bengaluru, Karnataka, India",
+  }),
+  {
+    location: "Bengaluru, Karnataka, India",
     latitude: 12.971599,
     longitude: 77.594563,
   }

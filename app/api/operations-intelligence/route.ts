@@ -497,7 +497,7 @@ export async function GET(request: NextRequest) {
                 factors: [
                   latestUpdate?.location
                     ? `Current location: ${latestUpdate.location}`
-                    : "Current GPS location",
+                    : `Current coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
                   `${traffic.level} traffic`,
                   weather.condition,
                   `${Math.round(remainingKm)} km remaining`,

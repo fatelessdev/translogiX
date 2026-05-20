@@ -18,10 +18,14 @@ export function getAutoTrackableShipments<T extends AutoTrackableShipment>(
 export function buildAutoTrackingPayload(coords: {
   latitude: number;
   longitude: number;
+  location?: string | null;
 }) {
+  const latitude = Number(coords.latitude.toFixed(6));
+  const longitude = Number(coords.longitude.toFixed(6));
+
   return {
-    location: "Auto GPS location",
-    latitude: Number(coords.latitude.toFixed(6)),
-    longitude: Number(coords.longitude.toFixed(6)),
+    location: coords.location?.trim() || `${latitude}, ${longitude}`,
+    latitude,
+    longitude,
   };
 }
